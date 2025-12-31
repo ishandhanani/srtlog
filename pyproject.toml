@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "srtlog"
+version = "0.1.0"
+description = "Log analysis toolkit for SGLang distributed inference benchmarks"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+keywords = ["benchmark", "analysis", "inference", "distributed", "llm", "sglang"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "plotly>=5.18.0",
+    "pyyaml>=6.0",
+    "pyarrow>=14.0.0",
+    "rich>=14.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.8.0",
+]
+
+[project.scripts]
+srtlog = "srtlog.cli.main:main"
+
+[project.urls]
+Homepage = "https://github.com/yourorg/srtlog"
+Documentation = "https://github.com/yourorg/srtlog#readme"
+Repository = "https://github.com/yourorg/srtlog"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/srtlog"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+extend-select = ["I", "E", "W", "F", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["srtlog"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"
