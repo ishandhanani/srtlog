@@ -2,8 +2,9 @@
 Pytest fixtures for srtlog tests
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 @pytest.fixture

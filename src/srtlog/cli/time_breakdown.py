@@ -15,10 +15,8 @@ import json
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
-
 from rich import box
 from rich.console import Console
 from rich.table import Table
@@ -109,7 +107,7 @@ def add_time_breakdown_subparser(subparsers):
     return parser
 
 
-def parse_metrics_files(metrics_dir: Path, limit: Optional[int] = None) -> list[dict]:
+def parse_metrics_files(metrics_dir: Path, limit: int | None = None) -> list[dict]:
     """Parse all SGLang metrics JSONL files in the directory."""
     requests = []
 
@@ -127,7 +125,7 @@ def parse_metrics_files(metrics_dir: Path, limit: Optional[int] = None) -> list[
     console.print(f"[blue]Found {len(log_files)} metrics files[/blue]")
 
     for log_file in log_files:
-        with open(log_file, "r") as f:
+        with open(log_file) as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -192,9 +190,6 @@ def extract_timing_breakdown(request: dict) -> dict:
 def generate_html(timing_data: list[dict], title: str) -> str:
     """Generate interactive HTML visualization."""
     import json as json_module
-
-    # Prepare data for plotting
-    request_indices = list(range(len(timing_data)))
 
     # Convert times to milliseconds for display
     segments_data = {}

@@ -2,9 +2,10 @@
 Engine for computing metrics and statistics from parsed logs.
 """
 
-from dataclasses import dataclass
 from collections import defaultdict
+from dataclasses import dataclass
 from datetime import datetime
+
 import numpy as np
 
 from .models import NodeMetrics

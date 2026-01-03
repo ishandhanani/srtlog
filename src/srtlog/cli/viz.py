@@ -334,7 +334,7 @@ def group_by_dp_filtered(nodes: list, batch_type: str) -> list[dict]:
     result = []
     for rank_idx, group_items in sorted(groups.items()):
         batches_by_ts = defaultdict(list)
-        for node, filtered_batches in group_items:
+        for _node, filtered_batches in group_items:
             for b in filtered_batches:
                 batches_by_ts[b.timestamp].append(b)
 
