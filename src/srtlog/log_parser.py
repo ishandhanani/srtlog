@@ -293,6 +293,15 @@ class NodeAnalyzer:
             ts, pp = match.groups()
             return 0, int(pp), 0, ts
 
+        # ISO 8601 format (no DP/TP/EP): 2025-12-30T15:52:33.006497Z
+        # May have ANSI codes around it like [2m2025-12-30T15:52:33.006497Z[0m
+        match = re.search(r"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})\.\d+Z?", line)
+        if match:
+            iso_ts = match.group(1)
+            # Convert to standard format: 2025-12-30T15:52:33 -> 2025-12-30 15:52:33
+            ts = iso_ts.replace("T", " ")
+            return 0, 0, 0, ts
+
         return None, None, None, None
 
     def _parse_prefill_batch_line(self, line: str) -> dict | None:

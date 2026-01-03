@@ -8,13 +8,27 @@ from srtlog import NodeAnalyzer
 class TestNodeAnalyzer:
     """Tests for NodeAnalyzer class."""
 
-    def test_parse_run_logs(self, job_4401453_logs_dir):
-        """Test parsing logs from a real run directory."""
+    def test_parse_run_logs_agg(self, job_4401453_logs_dir):
+        """Test parsing logs from aggregated mode run."""
         analyzer = NodeAnalyzer()
         nodes = analyzer.parse_run_logs(str(job_4401453_logs_dir))
 
-        # Should find at least some nodes
-        assert len(nodes) >= 0
+        # Should find agg nodes
+        assert len(nodes) > 0
+        agg_nodes = [n for n in nodes if n.is_agg]
+        assert len(agg_nodes) > 0
+
+    def test_parse_run_logs_disagg(self, job_4401463_logs_dir):
+        """Test parsing logs from disaggregated mode run."""
+        analyzer = NodeAnalyzer()
+        nodes = analyzer.parse_run_logs(str(job_4401463_logs_dir))
+
+        # Should find both prefill and decode nodes
+        assert len(nodes) > 0
+        prefill_nodes = [n for n in nodes if n.is_prefill]
+        decode_nodes = [n for n in nodes if n.is_decode]
+        assert len(prefill_nodes) > 0, "Should have prefill nodes"
+        assert len(decode_nodes) > 0, "Should have decode nodes"
 
     def test_parse_single_log_invalid_path(self):
         """Test parsing a non-existent file."""
@@ -23,25 +37,44 @@ class TestNodeAnalyzer:
 
         assert result is None
 
-    def test_filter_prefill_nodes(self, job_4401453_logs_dir):
-        """Test filtering for prefill nodes."""
+    def test_filter_prefill_nodes(self, job_4401463_logs_dir):
+        """Test filtering for prefill nodes in disagg mode."""
         analyzer = NodeAnalyzer()
-        nodes = analyzer.parse_run_logs(str(job_4401453_logs_dir))
+        nodes = analyzer.parse_run_logs(str(job_4401463_logs_dir))
 
         prefill_nodes = [n for n in nodes if n.is_prefill]
 
+        assert len(prefill_nodes) > 0
         for node in prefill_nodes:
             assert node.is_prefill
+            assert not node.is_decode
+            assert not node.is_agg
 
-    def test_filter_decode_nodes(self, job_4401453_logs_dir):
-        """Test filtering for decode nodes."""
+    def test_filter_decode_nodes(self, job_4401463_logs_dir):
+        """Test filtering for decode nodes in disagg mode."""
         analyzer = NodeAnalyzer()
-        nodes = analyzer.parse_run_logs(str(job_4401453_logs_dir))
+        nodes = analyzer.parse_run_logs(str(job_4401463_logs_dir))
 
         decode_nodes = [n for n in nodes if n.is_decode]
 
+        assert len(decode_nodes) > 0
         for node in decode_nodes:
             assert node.is_decode
+            assert not node.is_prefill
+            assert not node.is_agg
+
+    def test_agg_nodes_have_both_batch_types(self, job_4401453_logs_dir):
+        """Test that agg nodes contain both prefill and decode batches."""
+        analyzer = NodeAnalyzer()
+        nodes = analyzer.parse_run_logs(str(job_4401453_logs_dir))
+
+        agg_nodes = [n for n in nodes if n.is_agg]
+        assert len(agg_nodes) > 0
+
+        for node in agg_nodes:
+            batch_types = {b.batch_type for b in node.batches}
+            assert "prefill" in batch_types, f"Agg node {node.node_name} should have prefill batches"
+            assert "decode" in batch_types, f"Agg node {node.node_name} should have decode batches"
 
 
 class TestNodeAnalyzerParsing:

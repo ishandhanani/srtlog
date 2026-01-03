@@ -10,13 +10,29 @@ uv pip install .
 
 ## Usage
 
-```bash
-# Parse a run directory
-srtlog parse /path/to/job_12345/
+### Parse logs
 
-# Verbose output
-srtlog parse /path/to/logs/ -v
+```bash
+srtlog parse /path/to/job_12345/
 ```
+
+### Generate visualizations
+
+```bash
+# Each worker as separate line
+srtlog viz /path/to/logs/ -o report.html
+
+# Group by DP rank (average across TP workers)
+srtlog viz /path/to/logs/ -o report.html --group-by dp
+
+# Single averaged line per worker type
+srtlog viz /path/to/logs/ -o report.html --group-by all
+```
+
+The HTML report includes:
+- **Throughput over time** - input throughput (prefill) or generation throughput (decode)
+- **Queue depth** - running and queued requests
+- **Token usage** - KV cache utilization
 
 Output:
 ```

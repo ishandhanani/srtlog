@@ -7,6 +7,8 @@ import argparse
 import sys
 
 from .parse import add_parse_subparser
+from .time_breakdown import add_time_breakdown_subparser
+from .viz import add_viz_subparser
 
 
 def main():
@@ -24,6 +26,8 @@ def main():
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     add_parse_subparser(subparsers)
+    add_viz_subparser(subparsers)
+    add_time_breakdown_subparser(subparsers)
 
     args = parser.parse_args()
 
